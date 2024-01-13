@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     # Apps
     'Product',
     'settings',
+    'user',
+    # barbarity
     'rest_framework',
     'django_filters',
 ]

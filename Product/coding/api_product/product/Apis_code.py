@@ -12,3 +12,14 @@ def All_api(request):
         "data": re_data
     }
     return Response(re_send, re_status)
+
+
+@api_view(['GET'])
+def open_api(request):
+    call = ProductOops(request).open()
+    re_status, re_massage, re_data = call[0], call[1], call[2]
+    re_send = {
+        "massage": re_massage,
+        "data": re_data,
+    }
+    return Response(re_send, re_status)
