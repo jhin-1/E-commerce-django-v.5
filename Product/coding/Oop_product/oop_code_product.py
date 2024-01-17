@@ -38,36 +38,11 @@ class ProductOops:
         except:
             self.cost = 0
         try:
-            self.create_at = self.request.POST.get('create_at')
+            self.create_at = str(self.request.POST.get('create_at'))
         except:
             self.create_at = None
 
-    # def all(self):
-    #     get_products = Product.objects.all()
-    #     paginator = Paginator(get_products, 2)  # Show 2 contacts per page.
-    #     page = paginator.get_page(self.page_number)
-    #     if get_products:
-    #         for product in get_products:
-    #             product = {
-    #                 "id_product": product.id,
-    #                 "name": product.name,
-    #                 "category": product.category.name,
-    #                 "brand": product.brand.name,
-    #                 "description": product.description,
-    #                 "price": product.price,
-    #                 "cost": product.cost,
-    #                 "created_at": product.created_at,
-    #
-    #             }
-    #             self.list_items.append(product)
-    #         self.re_status = status.HTTP_200_OK
-    #         self.re_massege = "success"
-    #         self.re_data = self.list_items
-    #     else:
-    #         self.re_status = status.HTTP_404_NOT_FOUND
-    #         self.re_massege = "NOT FOUND"
-    #         self.re_data = None
-    #     return [self.re_status, self.re_massege, self.re_data]
+
     def all(self):
         products = Paginator(Product.objects.all(), 3).get_page(self.page_number)
         if products:
@@ -117,12 +92,13 @@ class ProductOops:
 
     def check_input(self):
         self.re_status = status.HTTP_400_BAD_REQUEST
+        self.re_massege = " Bad Request"
         if self.name is None or self.name == "":
             self.re_massege = "please enter product name"
         elif len(self.name) <= 5:
             self.re_massege = "the minimum character is 6"
-        elif len(self.name) >= 15:
-            self.re_massege = "the maximum character is 14"
+        elif len(self.name) >= 30:
+            self.re_massege = "the maximum character is 29"
 # -------------------------------------------------------------------------
         elif self.description is None or self.description == "":
             self.re_massege = " please enter description"
@@ -147,4 +123,38 @@ class ProductOops:
 # ---------------------------------------------------------------------------
         else:
             self.re_status = status.HTTP_100_CONTINUE
+            self.re_massege = " CONTINUE"
+
+    def create_product(self):
+        self.check_input()
+        if self.re_status == status.HTTP_100_CONTINUE:
+            try:
+                create_product = Product.objects.create(
+                    name=self.name,
+                    category=self.category,
+                    brand=self.brand,
+                    description=self.description,
+                    price=self.price,
+                    cost=self.cost,
+                )
+                self.re_status = status.HTTP_201_CREATED
+                self.re_massege = "created"
+                self.re_data = {
+                    "id_product": create_product.id,
+                    "name": create_product.name,
+                    "id_category": create_product.category.id,
+                    "id_brand": create_product.brand.id,
+                    "description": create_product.description,
+                    "price": create_product.price,
+                    "cost": create_product.cost,
+                    "created": create_product.created_at,
+                }
+            except Exception as e:
+                self.re_status = status.HTTP_500_INTERNAL_SERVER_ERROR
+                self.re_massege = str(e)
+                self.re_data = None
+
         return [self.re_status, self.re_massege, self.re_data]
+
+    def update_product(self):
+        pass

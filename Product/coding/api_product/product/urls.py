@@ -3,6 +3,7 @@ from .Apis_code import *
 
 
 urlpatterns = [
-    path('all', All_api),
+    path('all', all_api),
     path('open', open_api),
+    path('create', create_api),
 ]

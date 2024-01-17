@@ -1,23 +1,22 @@
 from django.db import models
 from django.utils.translation import gettext as _
 
-
 # Create your models here.
-#
+
 
 class Product(models.Model):
     name = models.CharField(max_length=20, verbose_name=_("product name"), blank=True, null=True)
     category = models.ForeignKey("Category", on_delete=models.CASCADE, blank=True, null=True)
-# we put the Category in double "" to tell Django this class is after this class
+#  we put the Category in double "" to tell Django this class is after this class
     brand = models.ForeignKey("settings.Brand", on_delete=models.CASCADE, blank=True, null=True)
-# we import model form  another model by set the name of app and the class we want to related with him Like this(setting.Brand)
+#  we import model form  another model by set the name of app and the class we want to related with him Like this(setting.Brand)
     description = models.TextField(max_length=100, verbose_name=_("product description"), blank=True, null=True)
-    price = models.DecimalField(max_digits=5, decimal_places=3, verbose_name=_("product price"), blank=True, null=True)
-    cost = models.DecimalField(max_digits=5, decimal_places=3, verbose_name=_("product cost"), blank=True, null=True)
-    created_at = models.DateTimeField()
+    price = models.DecimalField(max_digits=6, decimal_places=0, verbose_name=_("product price"), blank=True, null=True)
+    cost = models.DecimalField(max_digits=6, decimal_places=0, verbose_name=_("product cost"), blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     class Meta:
-        verbose_name = _('product') # for admin name of the class model
+        verbose_name = _('product')  # for admin name of the class model
         verbose_name_plural = _('product')
 
     def __str__(self):
