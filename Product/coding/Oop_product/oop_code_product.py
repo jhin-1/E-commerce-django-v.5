@@ -16,13 +16,11 @@ class ProductOops:
         except:
             self.name = None
         try:
-            self.category = Category.objects.get(
-                id=self.request.POST.get('id_category', self.request.GET.get('id_category')))
-
+            self.category = Category.objects.get(id=self.request.POST.get('id_category'))
         except:
             self.category = None
         try:
-            self.brand = Brand.objects.get(id=self.request.GET.get('id_brand'))
+            self.brand = Brand.objects.get(id=self.request.POST.get('id_brand', self.request.GET.get('id_brand')))
         except:
             self.brand = None
         try:
@@ -41,7 +39,6 @@ class ProductOops:
             self.create_at = str(self.request.POST.get('create_at'))
         except:
             self.create_at = None
-
 
     def all(self):
         products = Paginator(Product.objects.all(), 3).get_page(self.page_number)
@@ -131,19 +128,20 @@ class ProductOops:
             try:
                 create_product = Product.objects.create(
                     name=self.name,
-                    category=self.category,
                     brand=self.brand,
                     description=self.description,
                     price=self.price,
                     cost=self.cost,
+                    category=self.category
                 )
+
                 self.re_status = status.HTTP_201_CREATED
                 self.re_massege = "created"
                 self.re_data = {
                     "id_product": create_product.id,
                     "name": create_product.name,
-                    "id_category": create_product.category.id,
-                    "id_brand": create_product.brand.id,
+                    "id_category": create_product.category.name if self.category else None,
+                    "id_brand": create_product.brand.name if self.brand else None,
                     "description": create_product.description,
                     "price": create_product.price,
                     "cost": create_product.cost,
