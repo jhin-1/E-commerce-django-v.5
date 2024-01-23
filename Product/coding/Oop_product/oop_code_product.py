@@ -16,9 +16,17 @@ class ProductOops:
         except:
             self.name = None
         try:
-            self.category = Category.objects.get(id=self.request.POST.get('id_category'))
+            self.subcategory = SubCategory.objects.get(id=self.request.POST.get('id_sub cat'))
         except:
             self.category = None
+        try:
+            self.main_category = MainCategory.objects.get(id=self.request.POST.get('id_main cat'))
+        except:
+            self.main_category = None
+        try:
+            self.image = self.request.POST.get('image')
+        except:
+            self.image = None
         try:
             self.brand = Brand.objects.get(id=self.request.POST.get('id_brand', self.request.GET.get('id_brand')))
         except:
@@ -47,12 +55,25 @@ class ProductOops:
                 product_info = {
                     "id_product": product.id,
                     "name": product.name,
-                    "category": product.category.name if product.category else None,
                     "brand": product.brand.name if product.brand else None,
                     "description": product.description,
                     "price": product.price,
                     "cost": product.cost,
                     "created_at": product.created_at,
+                    "categories": [{   # This is array learned from python documentation
+                        "main_category": {
+                            "id": product.category.main_category.id,
+                            "name": product.category.main_category.name,
+                            "description": product.category.main_category.description,
+                            "created_at": product.category.main_category.created_at,
+                        },
+                        "sub_category": {
+                            "id": product.category.id,
+                            "name": product.category.name,
+                            "description": product.category.description,
+                            "created_at": product.category.created_at,
+                        },
+                    }],
                 }
                 self.list_items.append(product_info)
 
@@ -67,7 +88,10 @@ class ProductOops:
         return [self.re_status, self.re_massege, self.re_data]
 
     def open(self):
-        product = Product.objects.get(id=self.request.GET.get("id_product"))
+        try:
+            product = Product.objects.get(id=self.request.GET.get("id_product"))
+        except Product.DoesNotExist:
+            product = None
         if product:
             self.re_status = status.HTTP_200_OK
             self.re_massege = "opened"
@@ -75,6 +99,7 @@ class ProductOops:
                 "id_product": product.id,
                 "name": product.name,
                 "category": product.category.name,
+                "product_image": product.image,
                 "brand": product.brand.name,
                 "description": product.description,
                 "price": product.price,
@@ -96,28 +121,28 @@ class ProductOops:
             self.re_massege = "the minimum character is 6"
         elif len(self.name) >= 30:
             self.re_massege = "the maximum character is 29"
-# -------------------------------------------------------------------------
+        # -------------------------------------------------------------------------
         elif self.description is None or self.description == "":
             self.re_massege = " please enter description"
         elif len(self.description) <= 5:
             self.re_massege = "the minimum character 4"
         elif len(self.description) >= 80:
             self.re_massege = "the maximum character 79"
-# --------------------------------------------------------------------------
+        # --------------------------------------------------------------------------
         elif self.price == 0:
             self.re_massege = "please enter a price"
         elif self.price <= 5:
             self.re_massege = "The minimum price is 6"
         elif self.price >= 50000:
             self.re_massege = "The maximum price is 49999"
-# -------------------------------------------------------------------------
+        # -------------------------------------------------------------------------
         elif self.cost == 0:
             self.re_massege = "please enter a cost"
         elif self.cost <= 4:
             self.re_massege = "The minimum cost is 3"
         elif self.cost >= 40000:
             self.re_massege = "The maximum cost is 39999"
-# ---------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
         else:
             self.re_status = status.HTTP_100_CONTINUE
             self.re_massege = " CONTINUE"
@@ -155,4 +180,49 @@ class ProductOops:
         return [self.re_status, self.re_massege, self.re_data]
 
     def update_product(self):
-        pass
+        self.check_input()
+        if self.re_status == status.HTTP_100_CONTINUE:
+            try:
+                update_product = Product.objects.get(id=self.request.POST.get('id_product'))
+            except:
+                update_product = None
+            if update_product:
+                if self.name is not None:
+                    update_product.name = self.name
+                if self.category is not None:
+                    update_product.category = self.category
+                if self.brand is not None:
+                    update_product.brand = self.brand
+                if self.description is not None:
+                    update_product.description = self.description
+                if self.price is not None:
+                    update_product.price = self.price
+                if self.cost is not None:
+                    update_product.cost = self.cost
+                update_product.save()
+                self.re_status = status.HTTP_200_OK
+                self.re_massege = "UPDATED"
+                self.re_data = {
+                    "id_product": update_product.id,
+                    "id_category": update_product.category.name,
+                    "id_brand": update_product.brand.name,
+                    "description": update_product.description,
+                    "price": update_product.price,
+                    "cost": update_product.cost,
+                    "created": update_product.created_at,
+                }
+        return [self.re_status, self.re_massege, self.re_data]
+
+    def delete_product(self):
+        try:
+            delete_product = Product.objects.get(id=self.request.POST.get('id_product'))
+        except:
+            delete_product = None
+        if delete_product:
+            delete_product.delete()
+            self.re_status = status.HTTP_200_OK
+            self.re_massege = "deleted"
+        else:
+            self.re_status = status.HTTP_404_NOT_FOUND
+            self.re_massege = "not found"
+        return [self.re_status, self.re_massege]
