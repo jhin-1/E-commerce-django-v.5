@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from ...Oop_product.oop_code_product import *
+from Product.coding.Oop_product.oop_code_product import *
 
 
 @api_view(['GET'])
