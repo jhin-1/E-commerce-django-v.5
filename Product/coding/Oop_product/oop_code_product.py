@@ -9,16 +9,20 @@ class ProductOops:
         self.request = request
         self.list_items = []
         self.re_status, self.re_massege, self.re_data = status.HTTP_404_NOT_FOUND, "", None
-        self.page_number = self.request.GET.get("page", 1)  # تعيين قيمة افتراضية
-
+        self.page = self.request.GET.get("page", 1)  # تعيين قيمة افتراضية
+        self.product_exists = ProductFilter(data=self.request.POST).qs
         try:
             self.name = self.request.POST.get('name')
         except:
             self.name = None
         try:
-            self.category = Category.objects.get(id=self.request.POST.get('id_category'))
+            self.main_category = MainCategoryModel.objects.get(id=self.request.POST.get('id_main'))
         except:
-            self.category = None
+            self.main_category = None
+        try:
+            self.sub_category = SubCategory.objects.get(id=self.request.POST.get('id_sub'))
+        except:
+            self.sub_category = None
         try:
             self.brand = Brand.objects.get(id=self.request.POST.get('id_brand', self.request.GET.get('id_brand')))
         except:
@@ -35,13 +39,9 @@ class ProductOops:
             self.cost = float(self.request.POST.get('cost'))
         except:
             self.cost = 0
-        try:
-            self.create_at = str(self.request.POST.get('create_at'))
-        except:
-            self.create_at = None
 
     def all(self):
-        products = Paginator(Product.objects.all(), 3).get_page(self.page_number)
+        products = Paginator(Product.objects.all(), 20).get_page(self.page)
         if products:
             for product in products:
                 product_info = {
@@ -64,7 +64,7 @@ class ProductOops:
             self.re_massege = "NOT FOUND"
             self.re_data = None
 
-        return [self.re_status, self.re_massege, self.re_data]
+        return [self.re_status, self.re_massege, self.re_data, self.page]
 
     def open(self):
         product = Product.objects.get(id=self.request.GET.get("id_product"))
@@ -118,6 +118,9 @@ class ProductOops:
         elif self.cost >= 40000:
             self.re_massege = "The maximum cost is 39999"
 # ---------------------------------------------------------------------------
+        elif self.product_exists.exists():
+            self.re_massege = "Data already exists"
+# ---------------------------------------------------------------------------
         else:
             self.re_status = status.HTTP_100_CONTINUE
             self.re_massege = " CONTINUE"
@@ -132,15 +135,14 @@ class ProductOops:
                     description=self.description,
                     price=self.price,
                     cost=self.cost,
-                    category=self.category
+                    category=self.sub_category
                 )
-
                 self.re_status = status.HTTP_201_CREATED
                 self.re_massege = "created"
                 self.re_data = {
                     "id_product": create_product.id,
                     "name": create_product.name,
-                    "id_category": create_product.category.name if self.category else None,
+                    "id_category": create_product.category.name if self.sub_category else None,
                     "id_brand": create_product.brand.name if self.brand else None,
                     "description": create_product.description,
                     "price": create_product.price,

@@ -1,7 +1,6 @@
-<<<<<<< HEAD
-# from ...models import *
-# from rest_framework import status
-# from django.core.paginator import Paginator
+from ...models import *
+from rest_framework import status
+from django.core.paginator import Paginator
 #
 #
 # class CategoryOops:
@@ -47,10 +46,6 @@
 #     #         self.re_massege = "not found"
 #     #         self.re_data = None
 #     #     return [self.re_status, self.re_massege, self.re_data]
-=======
-from ...models import *
-from rest_framework import status
-from django.core.paginator import Paginator
 
 
 class MainCategory:
@@ -371,4 +366,4 @@ class SubCategoryOop(MainCategory):
             self.re_massege = str(e)
         return [self.re_status, self.re_massege]
 
->>>>>>> 8ef536d (create request's category and brand)
+

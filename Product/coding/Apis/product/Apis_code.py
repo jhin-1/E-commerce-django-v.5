@@ -6,10 +6,11 @@ from Product.coding.Oop_product.oop_code_product import *
 @api_view(['GET'])
 def all_product(request):
     call = ProductOops(request).all()
-    re_status, re_message, re_data = call[0], call[1], call[2]
+    re_status, re_message, re_data, page = call[0], call[1], call[2], call[3]
     re_send = {
         "message": re_message,
-        "data": re_data
+        "data": re_data,
+        "page": int(page),
     }
     return Response(re_send, re_status)
 
