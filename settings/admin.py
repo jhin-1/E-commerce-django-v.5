@@ -3,4 +3,7 @@ from .models import *
 # Register your models here.
 
 admin.site.register(Brand)
-admin.site.register(Variant)
+admin.site.register(Color)
+admin.site.register(Size)
+admin.site.register(Quantity)
+admin.site.register(variant)

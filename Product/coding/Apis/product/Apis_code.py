@@ -50,7 +50,7 @@ def update_product(request):
 
 @api_view(["DELETE"])
 def delete_product(request):
-    call = ProductOops(request).delete_product()
+    call = ProductOops(request).delete()
     re_status, re_massage = call[0], call[1]
     re_send = {
         "massage": re_massage,

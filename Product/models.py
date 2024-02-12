@@ -118,3 +118,5 @@ class Product_Accessories(models.Model):
 
     def __str__(self):
         return str(self.product)
+
+
