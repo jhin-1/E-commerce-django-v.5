@@ -12,8 +12,11 @@ class Product(models.Model):
     brand = models.ForeignKey("settings.Brand", on_delete=models.CASCADE, blank=True, null=True)
 #  we import model form  another model by set the name of app and the class we want to related with him Like this(setting.Brand)
     description = models.TextField(max_length=100, verbose_name=_("product description"), blank=True, null=True)
-    price = models.DecimalField(max_digits=6, decimal_places=0, verbose_name=_("product price"), blank=True, null=True)
+    variant = models.ManyToManyField("settings.Variant", blank=True, null=True, verbose_name=_("variant of product"))
+    customize = models.ForeignKey("settings.CustomizeVariant", on_delete=models.CASCADE, blank=True, null=True)
     cost = models.DecimalField(max_digits=6, decimal_places=0, verbose_name=_("product cost"), blank=True, null=True)
+    price = models.DecimalField(max_digits=7, decimal_places=0, null=True, blank=True, verbose_name="price of product")
+    quantity = models.PositiveIntegerField(null=True, blank=True, verbose_name="quantity of product")
     image = models.ImageField(upload_to=get_product, null=True, blank=True, verbose_name=" product image ")
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
@@ -33,7 +36,6 @@ class ProductFilter(django_filters.FilterSet):
         fields = {
             "name": ["exact"],
             "description": ["exact"],
-            "price": ["exact"],
             "cost": ["exact"],
         }
 
