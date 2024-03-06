@@ -157,3 +157,6 @@ class Variant(models.Model):
 
     def __str__(self):
         return self.color.name + " " + self.size.name + " " + str(self.quantity) + " " + str(self.price)
+
+
+

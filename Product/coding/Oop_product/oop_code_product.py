@@ -99,6 +99,7 @@ class ProductOops:
         return [self.re_status, self.re_massege, self.re_data]
 
     def open(self):
+        z = []
         try:
             product = Product.objects.get(id=self.request.GET.get("id_product"))
         except:
@@ -108,6 +109,22 @@ class ProductOops:
                 image_url = product.image.url
             except:
                 image_url = None
+            for v in product.variant.all():
+                var = {
+                    "id": v.id,
+                    "color_info": {
+                        "id": v.color.id,
+                        "name": v.color.name,
+                        "code_color": v.color.code_color,
+                    },
+                    "size_info":  {
+                        "id": v.size.id,
+                        "name": v.size.name,
+                    },
+                    "quantity": v.quantity,
+                    "price": v.price,
+                }
+                z.append(var)
             self.re_status = status.HTTP_200_OK
             self.re_massege = "opened"
             self.re_data = {
@@ -116,10 +133,12 @@ class ProductOops:
                 "category": product.category.name,
                 "brand": product.brand.name,
                 "description": product.description,
+                "variant": z,
                 "image": image_url,
                 "price": product.price,
                 "cost": product.cost,
-                "created_at": product.created_at,
+                "total_quantity": product.quantity,
+                "created_at": product.created_at.strftime("%d-%m-%Y"),
             }
         else:
             self.re_status = status.HTTP_404_NOT_FOUND
@@ -206,13 +225,8 @@ class ProductOops:
                 )
                 for x in self.variant:
                     if create_product:
-                        create_product.variant.add(x)
+                        create_product.variant.add(x)   # there are bug in this line
                         create_product.save()
-                # total_variants_quantity = sum([y.quantity for y in create_product.variant.all()])
-                # if total_variants_quantity != self.pro_quantity:
-                #     self.re_status = status.HTTP_400_BAD_REQUEST
-                #     self.re_massege = "The quantity of variants is not equal the quantity of products"
-                #     return [self.re_status, self.re_massege, self.re_data]
                 for y in create_product.variant.all():
                     variant = {
                         "id": y.id,
@@ -231,14 +245,15 @@ class ProductOops:
                     "id_brand": create_product.brand.name if self.brand else None,
                     "variant": z,
                     "description": create_product.description,
-                    "image": create_product.image.url,
+                    "image": create_product.image.url if self.image else None,
                     "price": create_product.price,
                     "cost": create_product.cost,
                     "created": create_product.created_at,
                 }
-            except:
-                create_product = None
-
+            except Exception as e:
+                self.re_status = status.HTTP_500_INTERNAL_SERVER_ERROR
+                self.re_massege = str(e)
+                self.re_data = None
         return [self.re_status, self.re_massege, self.re_data]
 
     def update_product(self):
@@ -253,7 +268,7 @@ class ProductOops:
                 update_pro.description = self.description
                 update_pro.category = self.sub_category
                 update_pro.brand = self.brand
-                update_pro.price = self.price
+                update_pro.price = self.pro_price
                 update_pro.cost = self.cost
                 update_pro.save()
                 self.re_status = status.HTTP_200_OK
@@ -274,14 +289,14 @@ class ProductOops:
         return [self.re_status, self.re_massege, self.re_data]
 
     def delete(self):
-        delete = self.product
-        if delete:
-            delete.delete()
+        if self.product:
+            self.product.delete()
             self.re_status = status.HTTP_200_OK
             self.re_massege = "DELETED"
         else:
             self.re_status = status.HTTP_404_NOT_FOUND
             self.re_massege = "NOT FOUND"
         return [self.re_status, self.re_massege]
+
 
 

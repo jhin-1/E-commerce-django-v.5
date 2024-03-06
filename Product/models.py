@@ -122,3 +122,14 @@ class Product_Accessories(models.Model):
         return str(self.product)
 
 
+class Cart(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Pro_cart", null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = _('Cart')
+        verbose_name_plural = _("Cart's")
+
+    def __str__(self):
+        return self.product.name
