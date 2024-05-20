@@ -38,9 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Apps
-    'Product',
-    'settings',
-    'user',
+    "Dashboard",
     # barbarity
     'rest_framework',
     'django_filters',
