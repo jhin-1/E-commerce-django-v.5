@@ -1,6 +1,4 @@
-#!/bin/sh
-'''exec' "/home/ahmedyosri/PyCharm projects/Ecommerce django/venv/bin/python3" "$0" "$@"
-' '''
+#!/home/ahmed/PycharmProjects/E-commerce-django-v.5/venv/bin/python3.10
 # -*- coding: utf-8 -*-
 import re
 import sys
