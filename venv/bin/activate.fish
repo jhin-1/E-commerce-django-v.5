@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/ahmedyosri/PyCharm projects/Ecommerce django/venv"
+set -gx VIRTUAL_ENV "/home/ahmed/PycharmProjects/E-commerce-django-v.5/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
